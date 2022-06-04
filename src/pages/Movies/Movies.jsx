@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import fetchMovieByName from '../../components/shared/fetchMovieByName';
 import { nanoid } from 'nanoid';
 import style from './Movies.module.scss';
@@ -8,6 +8,8 @@ const Movies = () => {
   const [query, setQuery] = useState('');
   const [movie, setMovie] = useState([]);
   const isFirstRender = useRef(true);
+  const location = useLocation();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const handleChange = useCallback(evt => {
     const value = evt.target.value;
@@ -44,12 +46,18 @@ const Movies = () => {
     return () => {
       const markup = movie.map(({ title, id }) => (
         <li key={nanoid()}>
-          <Link className={style.link} to={`/movies/${id}`}>{title}</Link>
+          <Link
+            state={{ from: location.pathname, search: location.search }}
+            className={style.link}
+            to={`/movies/${id}`}
+          >
+            {title}
+          </Link>
         </li>
       ));
       return markup;
     };
-  }, [movie]);
+  }, [movie, location.pathname, location.search]);
   return (
     <>
       <form

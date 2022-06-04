@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import fetchReview from '../shared/fetchReview';
+import fetchReview from '../../components/shared/fetchReview';
 const Reviews = () => {
   const { id } = useParams();
   const [review, setReview] = useState([]);
@@ -8,6 +8,7 @@ const Reviews = () => {
     async function fetch() {
       const reviewFetch = await fetchReview(id);
       console.log(reviewFetch.results);
+
       setReview(reviewFetch.results);
     }
     fetch();

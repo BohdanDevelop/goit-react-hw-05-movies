@@ -1,15 +1,20 @@
-import { useParams, Link, Route, Routes, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useParams, Link, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
 import fetchMovieById from '../../components/shared/fetchMovieById';
-import Cast from '../../components/Cast';
-import Reviews from '../../components/Reviews';
+import Cast from '../Cast';
+import Reviews from '../Reviews';
 import style from './MovieDetailsPage.module.scss';
 
 const MovieDetailsPage = () => {
   const [movieInfo, setMovieInfo] = useState({});
+  const location = useLocation();
+
+  const path = useMemo(() => {
+    return location.state ? location.state.from + location.state.search : '';
+  }, [location]);
+  console.log(location);
   const { id } = useParams();
-  const navigate = useNavigate();
-  const goBack = () => navigate(-1);
+
   useEffect(() => {
     async function fetchMovie() {
       const data = await fetchMovieById(id);
@@ -26,9 +31,9 @@ const MovieDetailsPage = () => {
 
   return (
     <>
-      <button className={style.back} type="button" onClick={goBack}>
+      <Link className={style.back} to={path}>
         Go back
-      </button>
+      </Link>
       <h2 className={style.heading}>{movieInfo.original_title}</h2>
       <p className={style.heading}>User score: {movieInfo.vote_average}</p>
       <h2 className={style.heading}>Overview</h2>
@@ -44,10 +49,18 @@ const MovieDetailsPage = () => {
       />
       <h4 className={style.heading}>Additional information</h4>
       <div className={style.divLink}>
-        <Link className={style.link} to={`/movies/${id}/cast`} replace>
+        <Link
+          state={location.state}
+          className={style.link}
+          to={`/movies/${id}/cast`}
+        >
           Cast
         </Link>
-        <Link className={style.link} to={`/movies/${id}/reviews`} replace>
+        <Link
+          state={location.state}
+          className={style.link}
+          to={`/movies/${id}/reviews`}
+        >
           Reviews
         </Link>
       </div>
